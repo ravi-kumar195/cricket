@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cricket Game</title>
+    <style>
+      body {
+        text-align: center;
+      }
+      .btn {
+        height: 100px;
+        width: 100px;
+        margin: 10px;
+        padding: 5px 10px;
+        font-size: 18px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        background-color: rgb(9, 202, 102);
+      }
+      .choice-img {
+        height: 75px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="">Bat Ball Stump Game</h1>
+
+    <button
+      class="btn"
+      onclick="
+        let computerChoice = generateCompChoice();
+        resultMsg = getResult('bat',computerChoice);
+        displayResult('bat',computerChoice,resultMsg)
+        "
+    >
+      <img class="choice-img" src="./images/bat.png" alt="bat img" />
+    </button>
+    <button
+      class="btn"
+      onclick="
+      computerChoice = generateCompChoice();
+      resultMsg= getResult('ball',computerChoice)
+      displayResult('ball',computerChoice,resultMsg)
+    "
+    >
+      <img class="choice-img" src="./images/ball.png" alt="ball img" />
+    </button>
+    <button
+      class="btn"
+      onclick="
+      computerChoice = generateCompChoice();
+      resultMsg = getResult('stump',computerChoice)
+      displayResult('stump',computerChoice,resultMsg)
+    "
+    >
+      <img class="choice-img" src="./images/stump.png" alt="Stump img" />
+    </button>
+
+    <h3 id="user-move"></h3>
+    <h3 id="computer-move"></h3>
+    <h3 id="result"></h3>
+    <h3 id="score"></h3>
+
+    <button
+      class="reset-btn"
+      onclick="localStorage.clear()
+      resetScore();
+      "
+    >
+      Reset
+    </button>
+    <script>
+      let scoreStr = localStorage.getItem("Score");
+      let score;
+      resetScore(scoreStr); //refresh krne ke baad ke liye
+      function resetScore(scoreStr) {
+        score = scoreStr
+          ? JSON.parse(scoreStr)
+          : {
+              win: 0,
+              lost: 0,
+              tie: 0,
+            };
+
+        score.displayScore = function () {
+          return `Won : ${score.win} lost : ${score.lost}
+          tie : ${score.tie}`;
+        };
+
+        displayResult();
+      }
+      function generateCompChoice() {
+        let randomNumber = Math.random() * 3;
+        if (randomNumber > 0 && randomNumber <= 1) {
+          return "bat";
+        } else if (randomNumber <= 2) {
+          return "ball";
+        } else {
+          return "stump";
+        }
+      }
+
+      function getResult(userMove, computerMove) {
+        if (userMove === "bat") {
+          if (computerMove === "bat") {
+            score.tie++;
+            return "Its a tie";
+          } else if (computerMove === "ball") {
+            score.win++;
+            return "User won";
+          } else {
+            score.lost++;
+            return "Computer won";
+          }
+        } else if (userMove === "ball") {
+          if (computerMove === "ball") {
+            score.tie++;
+            return "Its a tie";
+          } else if (computerMove === "bat") {
+            score.lost++;
+            return "Computer won";
+          } else {
+            score.win++;
+            return "User won";
+          }
+        } else if (userMove === "stump") {
+          if (computerMove === "stump") {
+            score.tie++;
+            return "Its a tie";
+          } else if (computerMove === "bat") {
+            score.win++;
+            return "User won";
+          } else if (computerMove === "ball") {
+            score.lost++;
+            return "Computer won";
+          }
+        }
+      }
+      function displayResult(userMove, computerMove, resultMsg) {
+        localStorage.setItem("Score", JSON.stringify(score));
+        document.querySelector("#user-move").innerText =
+          userMove !== undefined ? `You have chosen ${userMove}` : ``;
+        //empty string for reset krne ke baad k liye
+
+        document.querySelector("#computer-move").innerText =
+          computerMove !== undefined
+            ? `Computer's choice is ${computerMove}`
+            : ``;
+
+        document.querySelector("#result").innerText = resultMsg || ``;
+
+        document.querySelector("#score").innerText = score.displayScore();
+      }
+    </script>
+  </body>
+</html>
